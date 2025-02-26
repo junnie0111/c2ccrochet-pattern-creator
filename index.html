@@ -753,67 +753,68 @@
             </div>
           </div>
           
-         // Updated Grid Component Code
-<div className="overflow-auto p-4 bg-white rounded-md shadow">
-  <div className="inline-block">
-    {/* Top column numbers, reversed: gridSize.width → 1 (left to right in the DOM) */}
-    {showNumbers && (
-      <div className="flex">
-        {/* Empty corner cell for spacing */}
-        <div className="w-8 h-8 flex-none"></div>
-        {Array.from({ length: gridSize.width }, (_, i) => (
-          <div 
-            key={i} 
-            className="w-6 h-6 flex-none text-center text-xs font-medium text-gray-600"
-          >
-            {gridSize.width - i}
-          </div>
-        ))}
-      </div>
-    )}
-    
-    {/* 
-      Render rows from top to bottom in the DOM, 
-      but map them so row 0 in HTML = top row of the chart = the highest row number.
-    */}
-    {Array.from({ length: gridSize.height }, (_, rowIdx) => {
-      // realRowIndex is the actual row in the grid data, counting from the bottom up
-      const realRowIndex = gridSize.height - 1 - rowIdx;
-      const row = grid[realRowIndex];
-      
-      return (
-        <div key={realRowIndex} className="flex">
-          {/* Left row number: 
-              rowIdx=0 (top in HTML) => Row = gridSize.height 
-              rowIdx=gridSize.height-1 (bottom in HTML) => Row = 1
-          */}
-          {showNumbers && (
-            <div className="w-8 h-6 flex-none text-center text-xs font-medium text-gray-600 flex items-center justify-center">
-              {gridSize.height - rowIdx}
+          {/* Grid */}
+          <div className="overflow-auto p-4 bg-white rounded-md shadow">
+            <div className="inline-block">
+              {/* Top column numbers, reversed: gridSize.width → 1 (left to right in the DOM) */}
+              {showNumbers && (
+                <div className="flex">
+                  {/* Empty corner cell for spacing */}
+                  <div className="w-8 h-8 flex-none"></div>
+                  {Array.from({ length: gridSize.width }, (_, i) => (
+                    <div 
+                      key={i} 
+                      className="w-6 h-6 flex-none text-center text-xs font-medium text-gray-600"
+                    >
+                      {gridSize.width - i}
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* 
+                Render rows from top to bottom in the DOM, 
+                but map them so row 0 in HTML = top row of the chart = the highest row number.
+              */}
+              {Array.from({ length: gridSize.height }, (_, rowIdx) => {
+                // real
+          // realRowIndex is the actual row in the grid data, counting from the bottom up
+                const realRowIndex = gridSize.height - 1 - rowIdx;
+                const row = grid[realRowIndex];
+                
+                return (
+                  <div key={realRowIndex} className="flex">
+                    {/* Left row number: 
+                        rowIdx=0 (top in HTML) => Row = gridSize.height 
+                        rowIdx=gridSize.height-1 (bottom in HTML) => Row = 1
+                    */}
+                    {showNumbers && (
+                      <div className="w-8 h-6 flex-none text-center text-xs font-medium text-gray-600 flex items-center justify-center">
+                        {gridSize.height - rowIdx}
+                      </div>
+                    )}
+                    
+                    {/* Cells, rendered left to right, but each column index is still 0..width-1 */}
+                    {row.map((cell, colIndex) => {
+                      // Calculate diagonal for C2C guides if enabled
+                      const diagonal = getCellDiagonal(realRowIndex, colIndex);
+                      const isDiagonalHighlighted = showDiagonalGuides && diagonal % 2 === 0;
+                      
+                      return (
+                        <div 
+                          key={colIndex} 
+                          className={`w-6 h-6 flex-none border border-gray-300 cursor-pointer ${isDiagonalHighlighted ? 'bg-gray-100' : ''}`}
+                          style={{ backgroundColor: cell }}
+                          onMouseDown={() => handleMouseDown(realRowIndex, colIndex)}
+                          onMouseEnter={() => handleMouseEnter(realRowIndex, colIndex)}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              })}
             </div>
-          )}
-          
-          {/* Cells, rendered left to right, but each column index is still 0..width-1 */}
-          {row.map((cell, colIndex) => {
-            // Calculate diagonal for C2C guides if enabled
-            const diagonal = getCellDiagonal(realRowIndex, colIndex);
-            const isDiagonalHighlighted = showDiagonalGuides && diagonal % 2 === 0;
-            
-            return (
-              <div 
-                key={colIndex} 
-                className={`w-6 h-6 flex-none border border-gray-300 cursor-pointer ${isDiagonalHighlighted ? 'bg-gray-100' : ''}`}
-                style={{ backgroundColor: cell }}
-                onMouseDown={() => handleMouseDown(realRowIndex, colIndex)}
-                onMouseEnter={() => handleMouseEnter(realRowIndex, colIndex)}
-              />
-            );
-          })}
-        </div>
-      );
-    })}
-  </div>
-</div>
+          </div>
           
           <div className="mt-4 text-sm text-gray-600">
             <p><strong>How to use:</strong> Click and drag to color blocks on the grid. The diagonal guides show C2C working rows.</p>
@@ -835,3 +836,4 @@
   </script>
 </body>
 </html>
+                          
