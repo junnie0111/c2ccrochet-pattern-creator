@@ -755,22 +755,58 @@
           </div>
           
           {/* Grid */}
-          <div className="overflow-auto p-4 bg-white rounded-md shadow">
-            <div className="inline-block">
-              {/* Top column numbers, reversed: gridSize.width → 1 (left to right in the DOM) */}
-              {showNumbers && (
-                <div className="flex">
-                  {/* Empty corner cell for spacing */}
-                  <div className="w-8 h-8 flex-none"></div>
-                  {Array.from({ length: gridSize.width }, (_, i) => (
-                    <div 
-                      key={i} 
-                      className="w-6 h-6 flex-none text-center text-xs font-medium text-gray-600"
-                    >
-                      {gridSize.width - i}
-                    </div>
-                  ))}
-                </div>
+<div className="overflow-auto p-4 bg-white rounded-md shadow">
+  <div className="inline-block">
+    {/* Top column numbers, reversed order */}
+    {showNumbers && (
+      <div className="flex">
+        {/* Empty corner cell */}
+        <div className="w-8 h-8 flex-none"></div>
+        {Array.from({ length: gridSize.width }, (_, i) => (
+          <div 
+            key={i} 
+            className="w-6 h-6 flex-none text-center text-xs font-medium text-gray-600"
+          >
+            {gridSize.width - i}
+          </div>
+        ))}
+      </div>
+    )}
+    
+    {/* Render rows in visual order */}
+    {Array.from({ length: gridSize.height }, (_, rowIdx) => {
+      const realRowIndex = gridSize.height - 1 - rowIdx;
+      const row = grid[realRowIndex];
+      
+      return (
+        <div key={realRowIndex} className="flex">
+          {/* Row number */}
+          {showNumbers && (
+            <div className="w-8 h-6 flex-none text-center text-xs font-medium text-gray-600 flex items-center justify-center">
+              {gridSize.height - rowIdx}
+            </div>
+          )}
+          
+          {/* Grid cells */}
+          {row.map((cell, colIndex) => {
+            const diagonal = getCellDiagonal(realRowIndex, colIndex);
+            const isDiagonalHighlighted = showDiagonalGuides && diagonal % 2 === 0;
+            
+            return (
+              <div 
+                key={colIndex} 
+                className={`w-6 h-6 flex-none border border-gray-300 cursor-pointer ${isDiagonalHighlighted ? 'bg-gray-100' : ''}`}
+                style={{ backgroundColor: cell }}
+                onMouseDown={() => handleMouseDown(realRowIndex, colIndex)}
+                onMouseEnter={() => handleMouseEnter(realRowIndex, colIndex)}
+              />
+            );
+          })}
+        </div>
+      );
+    })}
+  </div>
+</div>
               )}
               
               {/* 
